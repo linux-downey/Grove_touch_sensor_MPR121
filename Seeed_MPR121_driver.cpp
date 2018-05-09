@@ -131,7 +131,7 @@ void Mpr121::set_threshold(u16 threshold)
 
 
 
-/**@brief Total 12 channels for touch electrode,bit0-bit11 of 8+8 bits data indicate if there is a channel triggled.
+/**@brief Total 12 channels for touch electrode,bit0-bit11 of 8+8 bits data indicate if there is a channel triggered.
  * @brief Bit0-bit11 correponding to channel 0-11
  * @return 16 bits indicate data.
  * */
@@ -147,7 +147,7 @@ u16 Mpr121::check_status_register()
 
 /**@brief When key is pressed,The sensor not just ouput 0/1
  * @brief The MPR121 provides filtered electrode output data for all 13 channels,
- * @param elecs_stat.Judge which channel is triggled according to this param 
+ * @param elecs_stat.Judge which channel is triggered according to this param 
  * @param elecs_filtered_data.Get corresponding channel data.
  * */
 void Mpr121::get_filtered_reg_data(u16 elecs_stat,u16* elecs_filtered_data)
