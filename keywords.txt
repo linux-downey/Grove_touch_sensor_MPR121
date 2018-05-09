@@ -1,0 +1,24 @@
+  
+#######################################
+# Syntax Coloring Map For Grove touch sensor MPR121
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+KEYWORD1	Mpr121
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+KEYWORD2	begin
+KEYWORD2	check_status_register
+KEYWORD2	select_mode
+KEYWORD2	set_globle_param
+KEYWORD2	set_debounce
+KEYWORD2	set_threshold
+
+#######################################
+# Constants (LITERAL1)
+#######################################
