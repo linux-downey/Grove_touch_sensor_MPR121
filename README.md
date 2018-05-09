@@ -18,7 +18,7 @@ Notice:
 >3. If you want to achieve a more precise control,Set sensor's baseline,threshold.
     Touch condition: Baseline - Electrode filtered data > Touch threshold 
     Release condition: Baseline - Electrode filtered data < Release threshold
-    Get more detail from [datasheet](www.baidu.com)
+    Get more detail from [datasheet](http://www.baidu.com)
 
 
 
