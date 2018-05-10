@@ -1,6 +1,9 @@
 Grove touch sensor MPR121
 =================================  
 
+![MPR121](https://github.com/linux-downey/Grove_touch_sensor_MPR121/blob/master/MPR121_module.png)  
+
+
 Introduction of sensor
 ----------------------------  
 The MPR121 features an increased internal intelligence plus Freescale’s second generation capacitance detection engine.
