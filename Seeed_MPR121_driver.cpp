@@ -36,19 +36,26 @@ Mpr121::Mpr121(u8 addr)
     _IIC_ADDR=addr;
 }
 
-void  Mpr121::begin()
+s32  Mpr121::begin()
 {
+    s32 ret=0;
     Wire.begin();
-    select_mode(STOP_MODE);
+    ret=select_mode(STOP_MODE);
+    if(0!=ret)
+    {
+        return -1;
+    }
     delay(100);
     /*FFI-6,CDC-16UA,CDT-0.5US,SFI-4,ESI-4MS*/
+    /**/
     set_globle_param(0x2310);
     /*Touch debounce =2*SFI*ESI,Realese debounce=2*SFI*ESI */
     set_debounce(0X22);
     /*Set touch and realese threshold 0x08.*/
     //set_threshold(0x0808);
-    //select_mode(START_PROXIMITY_DISABLE_MODE);
-    select_mode(START_PROXIMITY_ENABLE_MODE);
+    select_mode(START_PROXIMITY_DISABLE_MODE);
+    //select_mode(START_PROXIMITY_ENABLE_MODE);
+    return ret;
 }
 
 
@@ -56,18 +63,18 @@ void  Mpr121::begin()
  * @param mode
  * 
  * */
-void Mpr121::select_mode(sensor_mode_t mode)
+s32 Mpr121::select_mode(sensor_mode_t mode)
 {
     switch(mode)
     {
         case STOP_MODE:
-        sensor_stop();
+        return sensor_stop();
         break;
         case START_PROXIMITY_ENABLE_MODE:
-        sensor_start_proximity_enable();
+        return sensor_start_proximity_enable();
         break;
         case START_PROXIMITY_DISABLE_MODE:
-        sensor_start_proximity_disable();
+        return sensor_start_proximity_disable();
         break;
         default:break;
     }
@@ -150,35 +157,57 @@ u16 Mpr121::check_status_register()
  * @param elecs_stat.Judge which channel is triggered according to this param 
  * @param elecs_filtered_data.Get corresponding channel data.
  * */
-void Mpr121::get_filtered_reg_data(u16 elecs_stat,u16* elecs_filtered_data)
+void Mpr121::get_filtered_reg_data(u16 *elecs_stat,u16* elecs_filtered_data)
 {
     u16 value=0;
     u8 data_l,data_h;
     for(int i=0;i<CHANNEL_NUM;i++)
     {
-        if(elecs_stat&(1<<i))
+        if((*elecs_stat)&(1<<i))
         {
             IIC_read_byte(FILTERED_DATA_REG_START_ADDR_L+2*i,&data_l);
             IIC_read_byte(FILTERED_DATA_REG_START_ADDR_L+2*i+1,&data_h);
             elecs_filtered_data[i]=(u16)data_h<<8|data_l;
-            Serial.print("press value= 0X");
-            Serial.println(elecs_filtered_data[i],HEX);
+            if(TOUCH_THRESHOLD_MAX<elecs_filtered_data[i])
+            {
+                (*elecs_stat)&=~(1<<i);
+            }
+            //Serial.print("press value= 0X");
+            //Serial.println(elecs_filtered_data[i],HEX);
         }
     }
 }
 
+
+
+void Mpr121::get_baseline_data(u16 elecs_stat,u8* base_line_data)
+{
+    u16 value=0;
+    u8 data=0;
+    for(int i=0;i<CHANNEL_NUM;i++)
+    {
+        if(elecs_stat&(1<<i))
+        {
+            IIC_read_byte(BASELINE_FILTERING_CONTROL_REG_START_ADDR+i,&data);
+            Serial.print("base line value= 0X");
+            Serial.println(base_line_data[i],HEX);
+        }
+    }
+}
+
+
 /**@brief Set stop mode by set ELEC_CFG_REG_ADDR to 0x0 
  * 
  * */
-void Mpr121::sensor_stop()
+s32 Mpr121::sensor_stop()
 {
-    IIC_write_byte(ELEC_CFG_REG_ADDR,0);
+    return IIC_write_byte(ELEC_CFG_REG_ADDR,0);
 }
 
 /**@brief Set start mode with proximity enable by set ELEC_CFG_REG_ADDR to 0x0 
  * 
  * */
-void Mpr121::sensor_start_proximity_enable()
+s32 Mpr121::sensor_start_proximity_enable()
 {
     IIC_write_byte(ELEC_CFG_REG_ADDR,0x3c);
 }
@@ -186,20 +215,20 @@ void Mpr121::sensor_start_proximity_enable()
 /**@brief Set start mode with proximity disable by set ELEC_CFG_REG_ADDR to 0x0 
  * 
  * */
-void Mpr121::sensor_start_proximity_disable()
+s32 Mpr121::sensor_start_proximity_disable()
 {
-    IIC_write_byte(ELEC_CFG_REG_ADDR,0x0c);
+    IIC_write_byte(ELEC_CFG_REG_ADDR,0x3c);
 }
 
 
 /*****************************************IIC operation interface!!*****************************************/
 /************************************************************************************************************/
-void Mpr121::IIC_write_byte(u8 reg,u8 byte)
+s32 Mpr121::IIC_write_byte(u8 reg,u8 byte)
 {
     Wire.beginTransmission(_IIC_ADDR);
     Wire.write(reg);
     Wire.write(byte);
-    Wire.endTransmission();
+    return Wire.endTransmission();
 }
 
 void Mpr121::IIC_write_bytes(u8 reg,u8 bytes[],u32 bytes_len)

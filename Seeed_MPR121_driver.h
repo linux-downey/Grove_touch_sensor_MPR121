@@ -37,6 +37,8 @@
 
 #define DEFUALT_MPR121_ADDR   0X5B
 
+#define TOUCH_THRESHOLD_MAX   0X50       
+
 /****************************************************Sensor register address!!***********************************************/
 /****************************************************************************************************************************/
 
@@ -100,28 +102,30 @@ typedef enum
 }sensor_mode_t;
 
 
+
+
 class Mpr121
 {
     public:
         Mpr121(u8 addr=DEFUALT_MPR121_ADDR);
         ~Mpr121(){}
-        void begin();
+        s32 begin();
         u16 check_status_register();
-        void select_mode(sensor_mode_t mode);
+        s32 select_mode(sensor_mode_t mode);
         void set_debounce(u8 debounce);
         void set_threshold(u16 threshold);
         void set_globle_param(u16 value);
-        void get_filtered_reg_data(u16 elecs_stat,u16* elecs_filtered_data);
-
+        void get_filtered_reg_data(u16 *elecs_stat,u16* elecs_filtered_data);
+        void get_baseline_data(u16 elecs_stat,u8* base_line_data);
     private:        
         u8 _IIC_ADDR;
         void IIC_read_bytes(u8 reg,u8* bytes,u32 bytes_len);
         void IIC_read_byte(u8 reg,u8* byte);
-        void IIC_write_byte(u8 reg,u8 byte);
+        s32 IIC_write_byte(u8 reg,u8 byte);
         void IIC_write_bytes(u8 reg,u8 bytes[],u32 bytes_len);
-        void sensor_stop();
-        void sensor_start_proximity_enable();
-        void sensor_start_proximity_disable();
+        s32 sensor_stop();
+        s32 sensor_start_proximity_enable();
+        s32 sensor_start_proximity_disable();
 };
 
 
