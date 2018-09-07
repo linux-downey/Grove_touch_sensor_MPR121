@@ -152,6 +152,14 @@ u16 Mpr121::check_status_register()
     return val;
 }
 
+/**@brief The sensitivity can be set. The higher the value, the higher the sensitivity
+ * @param senvalue.You can assign 0x00~0xFF.
+ * */
+void Mpr121::set_sensitivity(u8 senvalue)
+{
+    touch_threshold_max=senvalue;
+}
+
 /**@brief When key is pressed,The sensor not just ouput 0/1
  * @brief The MPR121 provides filtered electrode output data for all 13 channels,
  * @param elecs_stat.Judge which channel is triggered according to this param 
@@ -168,7 +176,7 @@ void Mpr121::get_filtered_reg_data(u16 *elecs_stat,u16* elecs_filtered_data)
             IIC_read_byte(FILTERED_DATA_REG_START_ADDR_L+2*i,&data_l);
             IIC_read_byte(FILTERED_DATA_REG_START_ADDR_L+2*i+1,&data_h);
             elecs_filtered_data[i]=(u16)data_h<<8|data_l;
-            if(TOUCH_THRESHOLD_MAX<elecs_filtered_data[i])
+            if(touch_threshold_max<elecs_filtered_data[i])
             {
                 (*elecs_stat)&=~(1<<i);
             }

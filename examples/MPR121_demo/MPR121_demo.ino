@@ -45,6 +45,9 @@ void setup()
   {
     Serial.println("mpr121 init OK!");
   }
+  //set 0x00~0xFF to sensitivity,the value 
+  //The higher the value, the higher the sensitivity
+  mpr121.set_sensitivity(0xF0); 
   delay(100);
 }
 void loop()

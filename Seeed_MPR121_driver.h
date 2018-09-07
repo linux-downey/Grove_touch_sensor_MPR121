@@ -37,7 +37,7 @@
 
 #define DEFUALT_MPR121_ADDR   0X5B
 
-#define TOUCH_THRESHOLD_MAX   0X50       
+#define TOUCH_THRESHOLD_MAX   0XF0       
 
 /****************************************************Sensor register address!!***********************************************/
 /****************************************************************************************************************************/
@@ -117,6 +117,8 @@ class Mpr121
         void set_globle_param(u16 value);
         void get_filtered_reg_data(u16 *elecs_stat,u16* elecs_filtered_data);
         void get_baseline_data(u16 elecs_stat,u8* base_line_data);
+        void set_sensitivity(u8 senvalue);
+        u8 touch_threshold_max;
     private:        
         u8 _IIC_ADDR;
         void IIC_read_bytes(u8 reg,u8* bytes,u32 bytes_len);
